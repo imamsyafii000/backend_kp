@@ -1,5 +1,5 @@
 const db = require("../config/db");
-
+const bcrypt = require("bcryptjs");
 exports.dashboard = (req, res) => {
 
   const query = `
@@ -153,4 +153,99 @@ exports.getAllTugas = (req, res) => {
     if (err) return res.status(500).json({ message: err.sqlMessage });
     res.json(result);
   });
+};
+
+exports.updateAdmin = async (req, res) => {
+
+    try{
+
+        const { id } = req.params;
+
+        const {
+            username,
+            password
+        } = req.body;
+
+        // ================= TANPA PASSWORD =================
+
+        if(!password){
+
+            const query = `
+                UPDATE tb_admin
+                SET username = ?
+                WHERE id_admin = ?
+            `;
+
+            db.query(
+                query,
+                [username, id],
+                (err) => {
+
+                    if(err){
+
+                        return res.status(500).json({
+                            message: err.sqlMessage
+                        });
+
+                    }
+
+                    res.json({
+                        message:"Admin berhasil diupdate"
+                    });
+
+                }
+            );
+
+        }
+
+        // ================= DENGAN PASSWORD =================
+
+        else{
+
+            const hashedPassword =
+            await bcrypt.hash(password, 10);
+
+            const query = `
+                UPDATE tb_admin
+                SET username = ?,
+                    password = ?
+                WHERE id_admin = ?
+            `;
+
+            db.query(
+                query,
+                [
+                    username,
+                    hashedPassword,
+                    id
+                ],
+                (err) => {
+
+                    if(err){
+
+                        return res.status(500).json({
+                            message: err.sqlMessage
+                        });
+
+                    }
+
+                    res.json({
+                        message:"Admin berhasil diupdate"
+                    });
+
+                }
+            );
+
+        }
+
+    }catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+            message:"Server error"
+        });
+
+    }
+
 };

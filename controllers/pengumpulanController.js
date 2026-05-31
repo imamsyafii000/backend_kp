@@ -142,6 +142,7 @@ exports.nilaiTugas = (req, res) => {
 };
 
 exports.getBelumKumpul = (req, res) => {
+
   const { id_tugas } = req.params;
 
   const query = `
@@ -152,22 +153,35 @@ exports.getBelumKumpul = (req, res) => {
       p.id_pengumpulan,
 
       CASE 
-        WHEN p.id_pengumpulan IS NULL THEN 'BELUM KUMPUL'
+        WHEN p.id_pengumpulan IS NULL 
+          THEN 'BELUM KUMPUL'
         ELSE 'SUDAH KUMPUL'
       END AS status
 
-    FROM tb_siswa s
+    FROM tb_tugas t
+
+    JOIN tb_siswa s
+      ON s.id_kelas = t.id_kelas
 
     LEFT JOIN tb_pengumpulan p 
       ON s.id_siswa = p.id_siswa 
-      AND p.id_tugas = ?
+      AND p.id_tugas = t.id_tugas
+
+    WHERE t.id_tugas = ?
 
     ORDER BY status DESC, s.nama_siswa ASC
   `;
 
   db.query(query, [id_tugas], (err, result) => {
-    if (err) return res.status(500).json({ message: err.sqlMessage });
+
+    if (err) {
+      return res.status(500).json({
+        message: err.sqlMessage
+      });
+    }
 
     res.json(result);
+
   });
+
 };

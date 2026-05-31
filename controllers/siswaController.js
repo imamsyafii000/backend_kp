@@ -47,41 +47,95 @@ exports.getAllSiswa = (req, res) => {
 
 
 // ================= UPDATE =================
+// ================= UPDATE =================
 exports.updateSiswa = async (req, res) => {
+
   const { id } = req.params;
-  const { nama, username, password } = req.body;
+
+  const {
+    nama,
+    username,
+    password,
+    id_kelas
+  } = req.body;
 
   try {
+
     let query = "";
     let values = [];
 
+    // ================= JIKA PASSWORD DIISI =================
+
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const hashedPassword =
+      await bcrypt.hash(password, 10);
+
       query = `
         UPDATE tb_siswa
-        SET nama_siswa = ?, username = ?, password = ?
+        SET
+          nama_siswa = ?,
+          username = ?,
+          password = ?,
+          id_kelas = ?
         WHERE id_siswa = ?
       `;
-      values = [nama, username, hashedPassword, id];
-    } else {
+
+      values = [
+        nama,
+        username,
+        hashedPassword,
+        id_kelas,
+        id
+      ];
+
+    }
+
+    // ================= JIKA PASSWORD KOSONG =================
+
+    else {
+
       query = `
         UPDATE tb_siswa
-        SET nama_siswa = ?, username = ?
+        SET
+          nama_siswa = ?,
+          username = ?,
+          id_kelas = ?
         WHERE id_siswa = ?
       `;
-      values = [nama, username, id];
+
+      values = [
+        nama,
+        username,
+        id_kelas,
+        id
+      ];
+
     }
 
     db.query(query, values, (err, result) => {
-      if (err) return res.status(500).json({ message: err.sqlMessage });
 
-      res.json({ message: "Data siswa berhasil diupdate" });
+      if (err) {
+
+        return res.status(500).json({
+          message: err.sqlMessage
+        });
+
+      }
+
+      res.json({
+        message: "Data siswa berhasil diupdate"
+      });
+
     });
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
 
+  } catch (error) {
+
+    res.status(500).json(error);
+
+  }
+
+};
 
 // ================= DELETE =================
 exports.deleteSiswa = (req, res) => {

@@ -85,32 +85,32 @@ exports.getNilaiGuru = (req, res) => {
   const { kelas, mapel } = req.query;
 
   let query = `
-    SELECT 
-      s.id_siswa,
-      s.nama_siswa,
+  SELECT 
+    s.id_siswa,
+    s.nama_siswa,
 
-      k.nama_kelas,
+    k.nama_kelas,
 
-      mp.nama_mapel,
+    mp.nama_mapel,
 
-      ROUND(AVG(p.nilai),0) AS nilai
+    ROUND(AVG(p.nilai),0) AS nilai
 
-    FROM tb_pengumpulan p
+  FROM tb_pengumpulan p
 
-    JOIN tb_siswa s
-      ON p.id_siswa = s.id_siswa
+  JOIN tb_siswa s
+    ON p.id_siswa = s.id_siswa
 
-    JOIN tb_kelas k
-      ON s.id_kelas = k.id_kelas
+  JOIN tb_tugas t
+    ON p.id_tugas = t.id_tugas
 
-    JOIN tb_tugas t
-      ON p.id_tugas = t.id_tugas
+  JOIN tb_kelas k
+    ON t.id_kelas = k.id_kelas
 
-    JOIN tb_mapel mp
-      ON t.id_mapel = mp.id_mapel
+  JOIN tb_mapel mp
+    ON t.id_mapel = mp.id_mapel
 
-    WHERE t.id_guru = ?
-  `;
+  WHERE t.id_guru = ?
+`;
 
   const values = [id_guru];
 

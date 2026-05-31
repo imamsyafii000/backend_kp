@@ -26,6 +26,8 @@ app.use("/api/nilai", require("./routes/nilai"));
 app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
